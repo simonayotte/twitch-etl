@@ -4,6 +4,9 @@ Node.js ETL scraper tool using the Twitch API that continually fetches informati
 
 ## How to run
 
+For the ETL Process to be runned continually: `node main.js`
+For the Express server: `node express/app.js`
+
 **Prerequisites**
 
 - Twitch credentials stored in `.env` file
@@ -61,7 +64,20 @@ There is a lot of really interesting data that is being returned from the stream
 
 ### How would you introduce the concept of caching to make the system more efficient?
 
+- We could cache the responses of requests that are being frequently made in the express application endpoints.
+- Also, we are already somewhat implement caching by default with Redis, instead of having one MongoDB database that keeps all the streams we have this database layer that is used as caching solution to refresh the stream as reading from Redis is faster than reading from MongoDB.
+- We could cache the data being sent to the request for refreshing a stream instead of building the requests with the userId parameters each time we make a new request.
+
 ### How would you modify this system to make use of multiple threads?
+
+We can essentially separates our application in three or four different kind of worker processes that are each responsible for a specific part of the program.
+
+1. New Stream Fetcher Worker
+2. Stream Refresh Worker
+3. Save Ended Stream to MongoDB Worker
+4. Data Aggregator Worker
+
+These processes could be managed a master process which makes sure we are respecting the Twitch request limit.
 
 ## References
 
